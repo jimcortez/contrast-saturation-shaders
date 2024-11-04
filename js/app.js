@@ -4,10 +4,10 @@ import JSColor from '@eastdesire/jscolor'
 let file_cache = {};
 
 async function loadFile(src) {
-  if(file_cache[src]) return file_cache[src];
+  if (file_cache[src]) return file_cache[src];
 
   const response = await fetch('shaders/' + src);
-  let contents =  await response.text();
+  let contents = await response.text();
   file_cache[src] = contents;
   return contents
 }
@@ -45,6 +45,14 @@ async function createRendering(fsFilename, label, parent_node, values) {
   };
 
   requestAnimationFrame(animate);
+
+  if (values) {
+    for (const [key, value] of Object.entries(values)) {
+      renderer.setValue(key, value)
+    }
+  }
+
+  renderer.draw(canvas);
 
   return [renderer, values];
 }
@@ -90,7 +98,7 @@ const renderers = [
   })
 ]
 
-const variable_color_rendering = await createRendering('cubes.fs', 'Variable Colors', get_li(), {
+const variable_color_rendering = await createRendering('cubes.fs', 'Rotating Tetrad', get_li(), {
   main_color: getColorArray(mainColorPicker),
   background_color: getColorArray(backgroundColorPicker),
   color_rotation: 0
@@ -115,9 +123,9 @@ backgroundColorPicker.onChange = () => {
 
 
 const update_interval = 100;
-setInterval(()=>{
+setInterval(() => {
   let [renderer, config] = variable_color_rendering;
 
   config.color_rotation += 1;
-  if(config.color_rotation > 360) config.color_rotation -= 360;
+  if (config.color_rotation > 360) config.color_rotation -= 360;
 }, update_interval)
